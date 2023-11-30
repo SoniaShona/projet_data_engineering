@@ -21,4 +21,5 @@ L'objectif est de voir quelle combinaison donne les meilleurs résultats :
 
 
 ## Visualisation des résultats :
-![Plot du résultat de clustering avec ACP, t-SNE et UMAP]("results.png")
+![Plot du résultat de clustering avec ACP, t-SNE et UMAP](results.png)
+En exécutant le conteneur, Cette visualisation est sauvegardée dans une image "results.png"
