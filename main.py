@@ -4,8 +4,8 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 
 from sklearn.manifold import TSNE
+from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
-
 
 def dim_red(mat, p, method):
     '''
@@ -20,12 +20,13 @@ def dim_red(mat, p, method):
         red_mat : NxP list such that p<<m
     '''
     if method=='ACP':
-        red_mat = mat[:,:p]
+        pca=PCA(p)
+        red_mat = pca.fit_transform(mat)
         
     elif method=='TSNE':
         tsne = TSNE(n_components=p, random_state=42)
         red_mat = tsne.fit_transform(mat)
-        
+                
     elif method=='UMAP':
         red_mat = mat[:,:p]
         
@@ -50,8 +51,6 @@ def clust(mat, k):
     kmeans = KMeans(n_clusters=k, random_state=42)
     pred = kmeans.fit_predict(mat)
 
-    #pred = np.random.randint(k, size=len(corpus))
-    
     return pred
 
 # import data
