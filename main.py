@@ -3,9 +3,11 @@ from sklearn.metrics.cluster import normalized_mutual_info_score, adjusted_rand_
 from sentence_transformers import SentenceTransformer
 import numpy as np
 
-from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from umap import UMAP
 from sklearn.cluster import KMeans
+
 
 def dim_red(mat, p, method):
     '''
@@ -28,8 +30,9 @@ def dim_red(mat, p, method):
         red_mat = tsne.fit_transform(mat)
                 
     elif method=='UMAP':
-        red_mat = mat[:,:p]
-        
+        umap = UMAP(n_components=p, random_state=42)
+        red_mat = umap.fit_transform(mat)
+
     else:
         raise Exception("Please select one of the three methods : APC, AFC, UMAP")
     
@@ -42,7 +45,7 @@ def clust(mat, k):
 
     Input:
     -----
-        mat : input list 
+        mat : input list
         k : number of cluster
     Output:
     ------
