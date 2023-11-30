@@ -1,9 +1,12 @@
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.metrics.cluster import normalized_mutual_info_score, adjusted_rand_score
 from sentence_transformers import SentenceTransformer
-from sklearn.cluster import KMeans
-from umap import UMAP
 import numpy as np
+
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from umap import UMAP
+from sklearn.cluster import KMeans
 
 
 def dim_red(mat, p, method):
@@ -19,16 +22,17 @@ def dim_red(mat, p, method):
         red_mat : NxP list such that p<<m
     '''
     if method=='ACP':
-        red_mat = mat[:,:p]
+        pca=PCA(p)
+        red_mat = pca.fit_transform(mat)
         
-    elif method=='AFC':
-        red_mat = mat[:,:p]
-        
+    elif method=='TSNE':
+        tsne = TSNE(n_components=p, random_state=42)
+        red_mat = tsne.fit_transform(mat)
+                
     elif method=='UMAP':
-        # Apply UMAP for dimensionality reduction with p components
         umap = UMAP(n_components=p, random_state=42)
         red_mat = umap.fit_transform(mat)
-        
+
     else:
         raise Exception("Please select one of the three methods : APC, AFC, UMAP")
     
@@ -63,10 +67,14 @@ model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 embeddings = model.encode(corpus)
 
 # Perform dimensionality reduction and clustering for each method
-methods = ['ACP', 'AFC', 'UMAP']
+methods = ['ACP', 'TSNE', 'UMAP']
 for method in methods:
     # Perform dimensionality reduction
-    red_emb = dim_red(embeddings, 20, method)
+
+    if method == "TSNE":
+        red_emb = dim_red(embeddings, 3, method)
+    else:
+        red_emb = dim_red(embeddings, 20, method)
 
     # Perform clustering
     pred = clust(red_emb, k)
@@ -77,3 +85,4 @@ for method in methods:
 
     # Print results
     print(f'Method: {method}\nNMI: {nmi_score:.2f} \nARI: {ari_score:.2f}\n')
+
